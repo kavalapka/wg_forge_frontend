@@ -16,6 +16,9 @@ function formatTimestamp(timestamp){
   return date;
 }
 
+/**
+ * 1234756756777890 => 12**********7890
+ */
 function formatCard(number) {
   number = number.replace(/(?<=\d{2})\d(?=\d{4})/g, '*');
   return number;
@@ -30,7 +33,7 @@ export default (function () {
 
     const tr = document.createElement('tr');
     tr.setAttribute("id", "order_"+order.id);
-    
+
     order["created_at"] = formatTimestamp(order["created_at"]);
     order["card_number"] = formatCard(order["card_number"]);
 
