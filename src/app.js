@@ -24,6 +24,16 @@ function formatCard(number) {
   return number;
 }
 
+function formatCurrency(item) {
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2
+  });
+
+  return formatter.format(item);
+}
+
 export default (function () {
 
   const all_orders = Object.values(orders);
@@ -36,6 +46,7 @@ export default (function () {
 
     order["created_at"] = formatTimestamp(order["created_at"]);
     order["card_number"] = formatCard(order["card_number"]);
+    order["total"] = formatCurrency(order["total"]);
 
     for(const key in columns) {
       const td = document.createElement("td");
