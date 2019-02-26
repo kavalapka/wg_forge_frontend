@@ -1,6 +1,21 @@
 const orders = require('../data/orders.json');
 
 
+function formatTimestamp(timestamp){
+  const ms = new Date(timestamp*1000);
+  const date = ms.toLocaleString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour12: true,
+    hour: "2-digit",
+    minute:"2-digit",
+    second: "2-digit",
+  });
+
+  return date;
+}
+
 export default (function () {
 
   const all_orders = Object.values(orders);
@@ -11,10 +26,11 @@ export default (function () {
     const tr = document.createElement('tr');
     const order_id = "order_"+order.id;
     tr.setAttribute("id", order_id);
+    order["created_at"] = formatTimestamp(order["created_at"]) ;
+
 
     for(const key in columns) {
       const td = document.createElement("td");
-      console.log(key, columns, order[columns[key]]);
       td.textContent = order[columns[key]];
       tr.appendChild(td);
     };
