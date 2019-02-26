@@ -16,6 +16,11 @@ function formatTimestamp(timestamp){
   return date;
 }
 
+function formatCard(number) {
+  number = number.replace(/(?<=\d{2})\d(?=\d{4})/g, '*');
+  return number;
+}
+
 export default (function () {
 
   const all_orders = Object.values(orders);
@@ -24,10 +29,10 @@ export default (function () {
   all_orders.forEach(function(order, i, all_orders) {
 
     const tr = document.createElement('tr');
-    const order_id = "order_"+order.id;
-    tr.setAttribute("id", order_id);
-    order["created_at"] = formatTimestamp(order["created_at"]) ;
-
+    tr.setAttribute("id", "order_"+order.id);
+    
+    order["created_at"] = formatTimestamp(order["created_at"]);
+    order["card_number"] = formatCard(order["card_number"]);
 
     for(const key in columns) {
       const td = document.createElement("td");
