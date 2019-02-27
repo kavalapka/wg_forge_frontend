@@ -1,8 +1,10 @@
 const orders = require('../data/orders.json');
 const users = require('../data/users.json');
+const companies = require('../data/companies.json');
 
 const all_users = Object.values(users);
 const all_orders = Object.values(orders);
+const  all_companies = Object.values(companies);
 
 
 const formatTimestamp = (timestamp) => {
@@ -55,12 +57,59 @@ const formatUser = (user_id, td) => {
   td.setAttribute("class", "user-id");
   const a = document.createElement("a");
   a.setAttribute("href", "#");
+  a.setAttribute("class", "user-click");
   a.text = `${title}  ${user_data.first_name} ${user_data.last_name}`;
   td.appendChild(a);
+
+  //td.appendChild(showUserDetails(user_id));
+
+
+  const company_data = all_companies.filter((item) => {
+    return item.id === user_data.company_id;
+  })[0] || {};
+
+  const div  = document.createElement("div");
+  div.setAttribute("class", "user-details");
+  div.setAttribute("style", "display: none");
+
+  const birthday  = document.createElement("p");
+  birthday.innerText = "Birthday: " + formatTimestamp(user_data["birthday"]).slice(0, 10);
+  div.appendChild(birthday);
+
+  const img  = document.createElement("img");
+  img.setAttribute("src", user_data["avatar"]);
+  img.setAttribute("width", "100px");
+  div.appendChild(img);
+
+  const company_p  = document.createElement("p");
+  company_p.innerText = "Company: ";
+  const company_a  = document.createElement("a");
+
+  if(company_data.url){
+    company_a.setAttribute("href", company_data.url || "");
+    company_a.setAttribute("target", "_blank");
+    company_a.text = company_data.title;
+  }
+  /*company_a.setAttribute("href", company_data.url || "");
+  company_a.setAttribute("target", "_blank");*/
+  //company_a.text = company_data.title;
+  company_p.appendChild(company_a);
+  div.appendChild(company_p);
+
+  const industry = document.createElement("p");
+  industry.text = "Industry: Apparel / Consumer Services";
+  div.appendChild(industry);
+
+  td.appendChild(div);
+
+
 };
 
 
-const formatlocation = (country, ip, td) => `${country} (${ip})`;
+//const showUserDetails = (user_id) => {};
+
+
+const formatLocation = (country, ip) => `${country} (${ip})`;
 
 
 const showData = (fields) => fields;
@@ -73,7 +122,7 @@ const col = [
   {"formatFunction": formatCurrency, fields: ["total"]},
   {"formatFunction": formatCard, fields: ["card_number"]},
   {"formatFunction": showData, fields: ["card_type"]},
-  {"formatFunction": formatlocation, fields: ["order_country", "order_ip"]},
+  {"formatFunction": formatLocation, fields: ["order_country", "order_ip"]},
   ];
 
 export default (function () {
@@ -100,3 +149,16 @@ export default (function () {
     // next line is for example only
     document.getElementById("app");
 }());
+
+
+$( document ).ready(function() {
+  console.log( "ready!" );
+
+  $('.user-click').click(function () {
+    // .next() selects the A tag next subling;
+    $(this).next().slideToggle(200);
+  });
+  $('.user-details').slideUp(200);
+
+
+});
