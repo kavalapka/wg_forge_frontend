@@ -4,10 +4,11 @@ const companies = require('../data/companies.json');
 
 const all_users = Object.values(users);
 const all_orders = Object.values(orders);
-const  all_companies = Object.values(companies);
+const all_companies = Object.values(companies);
 
 
 const formatTimestamp = (timestamp) => {
+  if(!timestamp){return "-"}
   const ms = new Date(timestamp*1000);
   return ms.toLocaleString("en-US", {
     year: "numeric",
@@ -60,13 +61,17 @@ const formatUser = (user_id, td) => {
   a.setAttribute("class", "user-click");
   a.text = `${title}  ${user_data.first_name} ${user_data.last_name}`;
   td.appendChild(a);
+};
 
-  //td.appendChild(showUserDetails(user_id));
 
+//const showUserDetails = (user_id, user_data, div) => {
+const showUserDetails = (user_id, td) => {
+  formatUser(user_id, td);
 
+  const user_data = all_users.find(user_data => user_data.id === user_id);
   const company_data = all_companies.filter((item) => {
-    return item.id === user_data.company_id;
-  })[0] || {};
+      return item.id === user_data["company_id"];
+    })[0] || {};
 
   const div  = document.createElement("div");
   div.setAttribute("class", "user-details");
@@ -90,23 +95,16 @@ const formatUser = (user_id, td) => {
     company_a.setAttribute("target", "_blank");
     company_a.text = company_data.title;
   }
-  /*company_a.setAttribute("href", company_data.url || "");
-  company_a.setAttribute("target", "_blank");*/
-  //company_a.text = company_data.title;
+
   company_p.appendChild(company_a);
   div.appendChild(company_p);
 
   const industry = document.createElement("p");
-  industry.text = "Industry: Apparel / Consumer Services";
+  industry.innerText = "Industry: " + company_data["industry"];
   div.appendChild(industry);
 
   td.appendChild(div);
-
-
 };
-
-
-//const showUserDetails = (user_id) => {};
 
 
 const formatLocation = (country, ip) => `${country} (${ip})`;
@@ -117,7 +115,7 @@ const showData = (fields) => fields;
 
 const col = [
   {"formatFunction": showData, fields: ["transaction_id"]},
-  {"modifyFunction": formatUser, fields: ["user_id"]},
+  {"modifyFunction": showUserDetails, fields: ["user_id"]},
   {"formatFunction": formatTimestamp, fields: ['created_at']},
   {"formatFunction": formatCurrency, fields: ["total"]},
   {"formatFunction": formatCard, fields: ["card_number"]},
@@ -138,13 +136,11 @@ export default (function () {
       } else if (column.modifyFunction){
         column.modifyFunction(...fields, td);
       }
-      
       tr.appendChild(td)
     });
 
     document.getElementById("tbody").appendChild(tr);
   });
-
 
     // next line is for example only
     document.getElementById("app");
@@ -152,13 +148,9 @@ export default (function () {
 
 
 $( document ).ready(function() {
-  console.log( "ready!" );
-
   $('.user-click').click(function () {
-    // .next() selects the A tag next subling;
+    // .next() selects the A tag next sibling;
     $(this).next().slideToggle(200);
   });
   $('.user-details').slideUp(200);
-
-
 });
