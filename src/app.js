@@ -3,7 +3,7 @@ const users = require('../data/users.json');
 const companies = require('../data/companies.json');
 
 const all_users = Object.values(users);
-const all_orders = Object.values(orders);
+let all_orders = Object.values(orders);
 const all_companies = Object.values(companies);
 
 
@@ -42,9 +42,9 @@ const formatCurrency = (item) => {
 };
 
 
-const formatUser = (user_id, td) => {
+const formatUser = (user_id) => {
   const user_data = all_users.find(user_data => user_data.id === user_id);
-  var title;
+  let title;
 
   switch(user_data.gender) {
     case 'Male':
@@ -55,18 +55,19 @@ const formatUser = (user_id, td) => {
       break;
   }
 
+  return `${title}  ${user_data.first_name} ${user_data.last_name}`;
+};
+
+
+const showUserDetails = (user_id, td) => {
+  const user_name = formatUser(user_id);
+
   td.setAttribute("class", "user-id");
   const a = document.createElement("a");
   a.setAttribute("href", "#");
   a.setAttribute("class", "user-click");
-  a.text = `${title}  ${user_data.first_name} ${user_data.last_name}`;
+  a.text = user_name;
   td.appendChild(a);
-};
-
-
-//const showUserDetails = (user_id, user_data, div) => {
-const showUserDetails = (user_id, td) => {
-  formatUser(user_id, td);
 
   const user_data = all_users.find(user_data => user_data.id === user_id);
   const company_data = all_companies.filter((item) => {
@@ -112,18 +113,26 @@ const formatLocation = (country, ip) => `${country} (${ip})`;
 
 const showData = (fields) => fields;
 
+const getData = (fields) => fields;
+
+const getCurrency = (fields) => parseFloat(fields);
+
+const getUser = (fields) => fields;
+
+const getLocation = (fields) => fields;
+
 
 const col = [
-  {"formatFunction": showData, fields: ["transaction_id"]},
-  {"modifyFunction": showUserDetails, fields: ["user_id"]},
-  {"formatFunction": formatTimestamp, fields: ['created_at']},
-  {"formatFunction": formatCurrency, fields: ["total"]},
-  {"formatFunction": formatCard, fields: ["card_number"]},
-  {"formatFunction": showData, fields: ["card_type"]},
-  {"formatFunction": formatLocation, fields: ["order_country", "order_ip"]},
+  {"formatFunction": showData, fields: ["transaction_id"], "prepareSorting" : getData},
+  {"modifyFunction": showUserDetails, fields: ["user_id"], "prepareSorting" : getUser},
+  {"formatFunction": formatTimestamp, fields: ['created_at'], "prepareSorting" : getData},
+  {"formatFunction": formatCurrency, fields: ["total"], "prepareSorting" : getCurrency},
+  {"formatFunction": formatCard, fields: ["card_number"], },
+  {"formatFunction": showData, fields: ["card_type"], "prepareSorting" : getData},
+  {"formatFunction": formatLocation, fields: ["order_country", "order_ip"], "prepareSorting" : getLocation},
   ];
 
-export default (function () {
+function drawOrders() {
   all_orders.forEach(function(order, i, all_orders) {
     const tr = document.createElement('tr');
     tr.setAttribute("id", "order_"+order.id);
@@ -141,16 +150,106 @@ export default (function () {
 
     document.getElementById("tbody").appendChild(tr);
   });
-
-    // next line is for example only
-    document.getElementById("app");
-}());
-
-
-$( document ).ready(function() {
   $('.user-click').click(function () {
     // .next() selects the A tag next sibling;
     $(this).next().slideToggle(200);
   });
   $('.user-details').slideUp(200);
-});
+}
+
+
+export default (function () {
+
+  drawOrders();
+
+}());
+
+
+const sortTable = (event) => {
+  const target = event.target;
+
+  if (target.tagName != 'TH') return;
+
+  const header_num = target.cellIndex;
+  const header_fields = col[header_num];
+
+  if( !header_fields.prepareSorting) return;
+
+  highlight(target);
+  
+  const fields = col[header_num].fields;
+
+  const getText = (row) => {
+    let row_value = fields.map(fieldName => row[fieldName]);
+
+    if( header_fields.prepareSorting) {
+      return header_fields.prepareSorting(row_value);
+    }
+
+  };
+
+  all_orders.forEach(row => { row.value = getText(row)});
+  all_orders.sort(function(a, b) {
+    if (a.value > b.value) {
+      return 1; }
+    if (a.value < b.value) {
+      return -1; }
+    return 0;
+  });
+  console.log(all_orders);
+
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = '';
+  drawOrders();
+
+};
+
+let selectedTh;
+function highlight(node) {
+
+  if (selectedTh) {
+    selectedTh.classList.remove('highlight');
+  }
+  selectedTh = node;
+  selectedTh.classList.add('highlight');
+  const colNum = selectedTh.cellIndex;
+}
+
+
+const thead = document.getElementsByTagName("thead")[0];
+thead.onclick = sortTable;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
