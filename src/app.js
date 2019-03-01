@@ -107,6 +107,11 @@ const showUserDetails = (user_id, td) => {
   td.appendChild(div);
 };
 
+const ip2int = (ip) => {
+  return ip.split('.').reduce((ipInt, octet) => {
+    return (ipInt<<8) + parseInt(octet, 10)
+  }, 0) >>> 0
+};
 
 const formatLocation = (country, ip) => `${country} (${ip})`;
 
@@ -115,11 +120,17 @@ const showData = (fields) => fields;
 
 const getData = (fields) => fields;
 
-const getCurrency = (fields) => parseFloat(fields);
+const getCurrency = (fields) => [parseFloat(fields)];
 
-const getUser = (fields) => fields;
+const getUser = (user_id) => {
+  const user_data = all_users.find(user_data => user_data.id === user_id[0]);
+  return [user_data.first_name, user_data.last_name];
+};
 
-const getLocation = (fields) => fields;
+const getLocation = (fields) => {
+  fields[1] = ip2int(fields[1]);
+  return  fields
+};
 
 
 const col = [
@@ -141,7 +152,7 @@ function drawOrders() {
       const fields = column.fields.map(fieldName => order[fieldName]);
       const td = document.createElement("td");
       if (column.formatFunction){
-        td.textContent = column.formatFunction(...fields, td);
+        td.textContent = column.formatFunction(...fields);
       } else if (column.modifyFunction){
         column.modifyFunction(...fields, td);
       }
@@ -176,11 +187,11 @@ const sortTable = (event) => {
   if( !header_fields.prepareSorting) return;
 
   highlight(target);
-  
+
   const fields = col[header_num].fields;
 
-  const getText = (row) => {
-    let row_value = fields.map(fieldName => row[fieldName]);
+  const getText = (order_row) => {
+    let row_value = fields.map(fieldName => order_row[fieldName]);
 
     if( header_fields.prepareSorting) {
       return header_fields.prepareSorting(row_value);
@@ -188,15 +199,10 @@ const sortTable = (event) => {
 
   };
 
-  all_orders.forEach(row => { row.value = getText(row)});
-  all_orders.sort(function(a, b) {
-    if (a.value > b.value) {
-      return 1; }
-    if (a.value < b.value) {
-      return -1; }
-    return 0;
-  });
-  console.log(all_orders);
+  all_orders.forEach(order_row => { order_row.value = getText(order_row)});
+  all_orders = _.sortBy(all_orders, ['value.0', 'value.1']);
+
+  //console.log(all_orders);
 
   const tbody = document.getElementById("tbody");
   tbody.innerHTML = '';
@@ -204,15 +210,17 @@ const sortTable = (event) => {
 
 };
 
-let selectedTh;
+let selectedTh, cur_selector;
+
 function highlight(node) {
 
   if (selectedTh) {
-    selectedTh.classList.remove('highlight');
+    selectedTh.removeChild(cur_selector);
   }
   selectedTh = node;
-  selectedTh.classList.add('highlight');
-  const colNum = selectedTh.cellIndex;
+  const span = document.createElement("span");
+  span.innerHTML = '&#8595';
+  cur_selector = selectedTh.appendChild(span);
 }
 
 
