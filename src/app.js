@@ -168,10 +168,56 @@ function drawOrders() {
   $('.user-details').slideUp(200);
 }
 
+const getTotalSum = (data) => {
+  const sum = data.map(item => parseFloat(item["total"]));
+  const total = sum.reduce((partial_sum, a) => partial_sum + a).toFixed(2);
+  return total
+};
+
+const getMedian = (data) => {
+  const values = data.map(item => parseFloat(item["total"]));
+  values.sort((a, b) => a - b);
+  let median = (values[(values.length - 1) >> 1] + values[values.length >> 1]) / 2;
+  return median
+
+};
+
+const getAverage = (data) => getTotalSum(data) / data.length;
+
+const getCheck = (data) => {};
+
+
+function drawStatistics() {
+  const oc_td = document.getElementById("order-count");
+  oc_td.innerText = all_orders.length;
+
+  const order_total = getTotalSum(all_orders);
+  const ot_td = document.getElementById("order-total");
+  ot_td.innerText = formatCurrency(order_total);
+
+  const order_median = getMedian(all_orders);
+  const om_td = document.getElementById("median");
+  om_td.innerText = formatCurrency(order_median);
+
+  const average_check = getAverage(all_orders);
+  const ac_td = document.getElementById("average-check");
+  ac_td.innerText = formatCurrency(average_check);
+
+  const female_check = getCheck(all_orders, "female");
+  const fc_td = document.getElementById("female-check");
+  fc_td.innerText = female_check;
+
+  const male_check = getCheck(all_orders, "male");
+  const mc_td = document.getElementById("male-check");
+  mc_td.innerText = male_check;
+
+
+}
 
 export default (function () {
 
   drawOrders();
+  drawStatistics();
 
 }());
 
@@ -201,8 +247,6 @@ const sortTable = (event) => {
 
   all_orders.forEach(order_row => { order_row.value = getText(order_row)});
   all_orders = _.sortBy(all_orders, ['value.0', 'value.1']);
-
-  //console.log(all_orders);
 
   const tbody = document.getElementById("tbody");
   tbody.innerHTML = '';

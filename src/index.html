@@ -4,11 +4,19 @@
     <meta charset="UTF-8">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
+   <!-- <link rel="stylesheet" type="text/css" href="style.css" /> -->
     <style>
         th  {
             color: darkblue;
             cursor: pointer;
             background-color: beige;
+        }
+        tbody td {
+
+        }
+
+        tfoot td {
+
         }
     </style>
     <title>WG Forge Test</title>
@@ -48,6 +56,34 @@
                 <td>IS (211.145.96.59)<td>
             </tr> -->
             </tbody>
+        <tfoot>
+            <tr>
+                <td>Orders Count</td>
+                <td id="order-count" colspan="6"></td>
+            </tr>
+            <tr>
+                <td>Orders Total</td>
+                <td id="order-total" colspan="6"></td>
+            </tr>
+            <tr>
+                <td>Median Value</td>
+                <td id="median" colspan="6"></td>
+            </tr>
+            <tr>
+                <td>Average Check</td>
+                <td id="average-check" colspan="6"></td>
+            </tr>
+            <tr>
+                <td>Average Check (Female)</td>
+                <td id="female-check" colspan="6"></td>
+            </tr>
+            <tr>
+                <td>Average Check (Male)</td>
+                <td id="male-check" colspan="6"></td>
+            </tr>
+
+        </tfoot>
+
         </table>
 
     </div>
