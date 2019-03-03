@@ -179,12 +179,22 @@ const getMedian = (data) => {
   values.sort((a, b) => a - b);
   let median = (values[(values.length - 1) >> 1] + values[values.length >> 1]) / 2;
   return median
-
 };
 
 const getAverage = (data) => getTotalSum(data) / data.length;
 
-const getCheck = (data) => {};
+const getCheck = (data, gender) => {
+  const gender_users = data.filter( item => {
+    return item.gender === gender;
+  });
+
+  const gender_total = gender_users.map(user => {
+    let order = all_orders.find(item => item.user_id === user.id);
+    return {"total": order.total}
+  });
+
+  return getAverage(gender_total);
+};
 
 
 function drawStatistics() {
@@ -203,13 +213,13 @@ function drawStatistics() {
   const ac_td = document.getElementById("average-check");
   ac_td.innerText = formatCurrency(average_check);
 
-  const female_check = getCheck(all_orders, "female");
+  const female_check = getCheck(all_users, "Female");
   const fc_td = document.getElementById("female-check");
-  fc_td.innerText = female_check;
+  fc_td.innerText = formatCurrency(female_check);
 
-  const male_check = getCheck(all_orders, "male");
+  const male_check = getCheck(all_users, "Male");
   const mc_td = document.getElementById("male-check");
-  mc_td.innerText = male_check;
+  mc_td.innerText = formatCurrency(male_check);
 
 
 }
