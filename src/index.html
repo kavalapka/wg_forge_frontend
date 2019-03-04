@@ -4,21 +4,6 @@
     <meta charset="UTF-8">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
-   <!-- <link rel="stylesheet" type="text/css" href="style.css" /> -->
-    <style>
-        th  {
-            color: darkblue;
-            cursor: pointer;
-            background-color: beige;
-        }
-        tbody td {
-
-        }
-
-        tfoot td {
-
-        }
-    </style>
     <title>WG Forge Test</title>
 </head>
 <body>
@@ -26,6 +11,10 @@
         <h1>Orders</h1>
         <table>
             <thead>
+            <tr>
+                <th>Search:</th>
+                <th><input type="text" id="search" ></th>
+            </tr>
             <tr>
                 <th>Transaction ID</th>
                 <th>User Info</th>

@@ -7,7 +7,8 @@ export const getCurrency = (fields) => [parseFloat(fields)];
 
 export const getUser = (user_id) => {
   const user_data = all_users.find(user_data => user_data.id === user_id[0]);
-  return [user_data.first_name, user_data.last_name];
+  //return [user_data.first_name, user_data.last_name];
+  return [`${user_data.first_name} ${user_data.last_name}`];
 };
 
 const ip2int = (ip) => {
