@@ -1,8 +1,9 @@
-import { all_users, all_companies } from './app';
+import { all_companies } from './app';
 import { formatUser, formatTimestamp } from './format-functions';
 
-export const showUserDetails = (user_id, td) => {
-  const user_name = formatUser(user_id);
+export const showUserDetails = (order, td) => {
+  const {user_data} = order
+  const user_name = formatUser(order);
 
   td.setAttribute("class", "user-id");
   const a = document.createElement("a");
@@ -11,7 +12,6 @@ export const showUserDetails = (user_id, td) => {
   a.text = user_name;
   td.appendChild(a);
 
-  const user_data = all_users.find(user_data => user_data.id === user_id);
   const company_data = all_companies.filter((item) => {
       return item.id === user_data["company_id"];
     })[0] || {};
