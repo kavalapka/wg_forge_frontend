@@ -1,5 +1,3 @@
-import {all_users} from './app';
-
 export const formatTimestamp = (timestamp) => {
   if(!timestamp){return "-"}
   const ms = new Date(timestamp*1000);
@@ -35,8 +33,8 @@ export const formatCurrency = (item) => {
 };
 
 
-export const formatUser = (user_id) => {
-  const user_data = all_users.find(user_data => user_data.id === user_id);
+export const formatUser = (order) => {
+  const {format_user_id, user_data} = order;
   let title;
 
   switch(user_data.gender) {
@@ -48,9 +46,8 @@ export const formatUser = (user_id) => {
       break;
   }
 
-  return `${title}  ${user_data.first_name} ${user_data.last_name}`;
+  return `${title}  ${format_user_id}`;
 };
 
 export const formatLocation = (country, ip) => `${country} (${ip})`;
 
-export const formatData = (fields) => fields;
