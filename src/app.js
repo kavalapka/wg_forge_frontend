@@ -1,3 +1,4 @@
+require('./styles/style.css');
 import { getTotalSum, getMedian, getAverage, getCheck } from './statistic';
 import { formatTimestamp, formatCurrency, formatCard, formatLocation, formatData } from './format-functions';
 import { showUserDetails } from './modify-functions';
@@ -11,6 +12,34 @@ export const all_users = Object.values(users);
 export let all_orders = Object.values(orders);
 export const all_companies = Object.values(companies);
 
+let col_num, search_value;
+const store = {"order_by": col_num,
+               "search_by": search_value};
+
+function formatOrders(orders) {
+
+  const new_orders = orders.map(order => {
+
+    col.forEach(column => {
+      const fields = column.fields.map(fieldName => order[fieldName]);
+      let title = "format_"+column.fields[0];
+      //console.log('title', title)
+
+      if (column.formatFunction){
+        order[title] = column.formatFunction(...fields);
+      } else if (column.modifyFunction){
+        //console.log('user field', fields)
+        order[title] = column.prepareSorting(fields);
+      }
+
+      //console.log('title', title, order.title)
+    });
+    return order
+  });
+  //console.log("new_orders[0]", new_orders[0]);
+  return new_orders;
+}
+
 
 const col = [
   {"formatFunction": formatData, fields: ["transaction_id"], "prepareSorting" : getData},
@@ -22,6 +51,10 @@ const col = [
   {"formatFunction": formatLocation, fields: ["order_country", "order_ip"], "prepareSorting" : getLocation},
   ];
 
+const format_orders = formatOrders(all_orders);
+console.log('formatted first', format_orders[0]);
+
+
 const thead = document.getElementsByTagName("thead")[0];
 thead.onclick = sortTable;
 
@@ -31,6 +64,48 @@ export default (function () {
   drawStatistics();
 }());
 
+
+function draw(store) {
+
+}
+
+$(document).ready(function(){
+  $('#search').keyup(function () {
+    searchTable()
+  })
+});
+
+
+
+const searchTable = () => {
+  const key = ["format_transaction_id", "format_total", "format_card_type", "format_order_country", "format_user_id"];
+  const input = document.getElementById("search");
+
+  console.log("inputText", input.value);
+
+  const orders_find = format_orders.filter(order => {
+    //console.log("order", order);
+    let search_str='';
+    for( let i in key){
+      search_str = search_str.concat(order[key[i]])+ ' ';
+    }
+    console.log('search_str', search_str);
+    return search_str.indexOf(input.value) > 0
+  });
+
+
+  console.log('orders_find[0]', orders_find[0], orders_find.length)
+
+
+    /*
+     let found, tr;
+     if (found) {
+      tr[i].style.display = "";
+      found = false;
+    } else {
+      tr[i].style.display = "none";
+    }*/
+};
 
 function drawOrders() {
   all_orders.forEach(function(order, i, all_orders) {
@@ -100,9 +175,7 @@ function sortTable(event) {
 
   const getText = (order_row) => {
     let row_value = fields.map(fieldName => order_row[fieldName]);
-    if( header_fields.prepareSorting) {
       return header_fields.prepareSorting(row_value);
-    }
   };
 
   all_orders.forEach(order_row => { order_row.value = getText(order_row)});

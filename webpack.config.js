@@ -3,6 +3,14 @@ var path = require("path");
 var HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
+  },
   entry: "./src/app.js",
   output: {
     path: path.resolve(__dirname, "dist"),
